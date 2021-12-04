@@ -1,0 +1,7 @@
+org.apache.commons.beanutils.BasicDynaBean,6630702000162945071,commons-beanutils-1.8.3.jar
+org.apache.commons.beanutils.BasicDynaClass,6170153721746209026,commons-beanutils-1.9.2.jar
+org.apache.commons.beanutils.BasicDynaClass,7317247033994791732,commons-beanutils-1.8.3.jar
+org.apache.commons.beanutils.BeanComparator,-2044202215314119608,commons-beanutils-1.9.2.jar
+org.apache.commons.beanutils.BeanComparator,-3490850999041592962,commons-beanutils-1.8.3.jar
+org.apache.commons.beanutils.RowSetDynaClass,-5199072814575097608,commons-beanutils-1.9.2.jar
+org.apache.commons.beanutils.WrapDynaBean,-2177401532100818092,commons-beanutils-1.9.2.jar

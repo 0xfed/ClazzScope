@@ -1,0 +1,10 @@
+org.apache.commons.collections.buffer.PriorityBuffer,6891186490470027896,commons-collections-3.2.2.jar
+org.apache.commons.collections.functors.CloneTransformer,-8188742709499652567,commons-collections-3.1.jar
+org.apache.commons.collections.functors.ForClosure,-1190120533393621674,commons-collections-3.1.jar
+org.apache.commons.collections.functors.InstantiateFactory,-7732226881069447957,commons-collections-3.1.jar
+org.apache.commons.collections.functors.InstantiateTransformer,3786388740793356347,commons-collections-3.1.jar
+org.apache.commons.collections.functors.InvokerTransformer,-8653385846894047688,commons-collections-3.1.jar
+org.apache.commons.collections.functors.PrototypeFactory$PrototypeCloneFactory,5604271422565175555,commons-collections-3.1.jar
+org.apache.commons.collections.functors.PrototypeFactory$PrototypeSerializationFactory,-8704966966139178833,commons-collections-3.1.jar
+org.apache.commons.collections.functors.WhileClosure,-3110538116913760108,commons-collections-3.1.jar
+org.apache.commons.collections.keyvalue.MultiKey,4465448607415788805,commons-collections-3.1.jar

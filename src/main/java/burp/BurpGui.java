@@ -2,8 +2,6 @@ package burp;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -29,6 +27,7 @@ public class BurpGui {
     private JButton refreshDNS;
     private JButton copyWordlistButton;
     private TreeSet<String> classesFound = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+    private TreeMap<String, String> libraryDetect = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private TreeMap<String, String> classesNotFound = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private JListRenderer cellRenderer;
 
@@ -130,6 +129,7 @@ public class BurpGui {
         clearHistoryAndResetButton.setToolTipText("Reset will create a new collaborator interaction endpoint and no longer listen for incoming interactions on the previous endpoint. Class lists and the output will be cleared, as well.");
         optionsPanel.add(clearHistoryAndResetButton, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         detectLibraryVersionsButton = new JButton();
+        detectLibraryVersionsButton.setVisible(false);
         detectLibraryVersionsButton.setActionCommand("detectLibraryVersion");
         detectLibraryVersionsButton.setText("Detect Library Versions");
         detectLibraryVersionsButton.setToolTipText("Detect library versions uses the bundled wordlists to try and identify library versions on the remote classpath");
@@ -140,6 +140,7 @@ public class BurpGui {
         copyWordlistButton.setToolTipText("Detect library versions uses the bundled wordlists to try and identify library versions on the remote classpath");
         optionsPanel.add(copyWordlistButton, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label5 = new JLabel();
+        label5.setVisible(false);
         label5.setText("Built-in Analyzer:");
         optionsPanel.add(label5, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
@@ -169,6 +170,11 @@ public class BurpGui {
     public JComponent $$$getRootComponent$$$() {
         return mainPanel;
     }
+
+    public Map<String,String> getLibraries() {
+        return libraryDetect;
+    }
+
 
     private class JListRenderer extends DefaultListCellRenderer {
         private final Color CELL_COLOR_1 = Color.decode("#F2F2F2");
@@ -258,6 +264,7 @@ public class BurpGui {
         detectLibraryVersionsButton.addActionListener(actionListener);
         clearHistoryAndResetButton.addActionListener(actionListener);
         copyWordlistButton.addActionListener(actionListener);
+        copyWordlistButton.setVisible(false);
         refreshDNS.addActionListener(actionListener);
         cellRenderer = new JListRenderer();
 
@@ -306,20 +313,24 @@ public class BurpGui {
     }
 
     public synchronized void addClassFound(String classFound) {
-        String cls = classesNotFound.remove(classFound
-                .replaceAll("d-0-ll", "\\$")
-                .replaceAll("d-4-sh", "_")
-        );
-        if (cls != null) {
+
+        if (classFound.replaceAll(" ", "").equals("")) return;
+        String clsName = classFound
+                .replaceAll("-dl-", "\\$")
+                .replaceAll("^([-\\d]+)-d(.*)", "$2,$1");
+        String cls = libraryDetect.get(clsName);
+        if (cls == null) return;
             classesFound.add(cls);
-            classesNotFound.remove(classFound);
+            classesNotFound.remove(cls);
             refreshClassLists();
-        }
+
     }
 
-    public synchronized void addClassNotFound(String classNotFound) {
-        if (!classesFound.contains(classNotFound)) {
-            classesNotFound.put(classNotFound, classNotFound);
+    public synchronized void addClassNotFound(String classNotFound, String library) {
+        libraryDetect.put(classNotFound, classNotFound + "," + library);
+        if (!classesFound.contains(classNotFound + "," + library)) {
+            classesNotFound.put(classNotFound + "," + library, classNotFound);
+
             refreshClassLists();
         }
     }

@@ -1,13 +1,11 @@
 package burp;
 
 import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 
-import com.bishopfox.gadgetprobe.GadgetProbe;
+import net.babyphd.clazzscope.ClazzScope;
 import org.json.*;
 
 
@@ -46,7 +44,7 @@ public class BurpExtender implements IBurpExtender, ActionListener, IIntruderPay
 
 
         // set our extension name
-        callbacks.setExtensionName("GadgetProbe");
+        callbacks.setExtensionName("ClazzScope");
 
         // register ourselves as an Intruder payload processor
         callbacks.registerIntruderPayloadProcessor(this);
@@ -58,8 +56,8 @@ public class BurpExtender implements IBurpExtender, ActionListener, IIntruderPay
         stdout = new PrintWriter(callbacks.getStdout(), true);
         stderr = new PrintWriter(callbacks.getStderr(), true);
 
-        stdout.println("GadgetProbe Initialized!");
-        stdout.println("Learn more: https://github.com/BishopFox/GadgetProbe");
+        stdout.println("ClazzScope Initialized!");
+        stdout.println("Learn more: https://github.com/TDB");
         stdout.println("");
 
         initializeCurrentCollaboratorVariables();
@@ -95,7 +93,7 @@ public class BurpExtender implements IBurpExtender, ActionListener, IIntruderPay
     @Override
     public String getProcessorName()
     {
-        return "ClassName to GadgetProbe";
+        return "ClassName to ClazzScope";
     }
 
     private byte[] convertToBytes(Object object) throws IOException {
@@ -109,10 +107,13 @@ public class BurpExtender implements IBurpExtender, ActionListener, IIntruderPay
     @Override
     public byte[] processPayload(byte[] currentPayload, byte[] originalPayload, byte[] baseValue)
     {
-        GadgetProbe gp = InteractionServer.getGadgetProbe();
-        String className = helpers.bytesToString(currentPayload);
+        ClazzScope gp = InteractionServer.getClazzScope();
+        String oldclassName = helpers.bytesToString(currentPayload);
+        String library = oldclassName.substring(oldclassName.lastIndexOf(",")+1);
+        oldclassName = oldclassName.substring(0, oldclassName.length() - library.length()-1);
 
-        Object obj = null;
+        String className = oldclassName.replaceAll(",", "\\.");
+        byte[] obj = null;
         try {
             obj = gp.getObject(className);
         } catch (SecurityException e) {
@@ -122,12 +123,8 @@ public class BurpExtender implements IBurpExtender, ActionListener, IIntruderPay
             return currentPayload;
         }
         if (obj != null) {
-            try {
-                guiManager.addClassNotFound(className);
-                return convertToBytes(obj);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                guiManager.addClassNotFound(oldclassName, library);
+                return obj;
         } else {
             String msg = "Error: Class name contains unsupported characters: " + className;
             stderr.println(msg);
@@ -206,12 +203,12 @@ public class BurpExtender implements IBurpExtender, ActionListener, IIntruderPay
             guiManager.clearConsole();
         }
         else if(command.equals("detectLibraryVersion")) {
-            String output = Analyzer.Analyze(guiManager.getClassesFound(), guiManager.getClassesNotFound());
+            String output = Analyzer.Analyze(guiManager.getClassesFound(), guiManager.getLibraries());
             guiManager.consolePrintln(output);
         }
         else if(command.equals("copyWordlist")) {
-            Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
-            cb.setContents(new StringSelection(Analyzer.getWordlist()), null);
+            //Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+            //cb.setContents(new StringSelection(Analyzer.getWordlist()), null);
         }
         else if(command.equals("reset")) {
             guiManager.reset();
@@ -244,7 +241,7 @@ public class BurpExtender implements IBurpExtender, ActionListener, IIntruderPay
 
     @Override
     public String getTabCaption() {
-        return "GadgetProbe";
+        return "ClazzScope";
     }
 
     @Override

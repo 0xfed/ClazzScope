@@ -219,6 +219,7 @@
             </constraints>
             <properties>
               <actionCommand value="copyWordlist"/>
+              <enabled value="false"/>
               <text value="Copy Detect Library Wordlist"/>
               <toolTipText value="Detect library versions uses the bundled wordlists to try and identify library versions on the remote classpath"/>
             </properties>

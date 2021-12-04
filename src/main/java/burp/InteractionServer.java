@@ -1,8 +1,7 @@
 package burp;
 
-import com.bishopfox.gadgetprobe.GadgetProbe;
+import net.babyphd.clazzscope.ClazzScope;
 
-import java.awt.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.DateFormat;
@@ -25,11 +24,11 @@ public class InteractionServer extends Thread {
     private int pollingMilliseconds = 30000;
     private Date lastPollingDate;
 
-    private static GadgetProbe gadgetProbe;
+    private static ClazzScope clazzScope;
     private BurpGui guiManager;
 
-    public static GadgetProbe getGadgetProbe() {
-        return gadgetProbe;
+    public static ClazzScope getClazzScope() {
+        return clazzScope;
     }
 
     public InteractionServer(IBurpExtenderCallbacks callbacks, IBurpCollaboratorClientContext initialCollaboratorContext, BurpGui guiManager) {
@@ -43,7 +42,7 @@ public class InteractionServer extends Thread {
 
 
         if(initialCollaboratorContext != null) {
-            this.gadgetProbe = new GadgetProbe(initialCollaboratorContext.generatePayload(true));
+            this.clazzScope = new ClazzScope(initialCollaboratorContext.generatePayload(true));
             collaboratorContext = initialCollaboratorContext;
         } else {
             stdout.println("Collaborator disabled");
@@ -75,7 +74,7 @@ public class InteractionServer extends Thread {
     }
 
     public void setCollaboratorContext(IBurpCollaboratorClientContext collaboratorContext) {
-        this.gadgetProbe = new GadgetProbe(collaboratorContext.getCollaboratorServerLocation());
+        this.clazzScope = new ClazzScope(collaboratorContext.getCollaboratorServerLocation());
     }
 
     public void run() {
@@ -188,6 +187,6 @@ public class InteractionServer extends Thread {
 
     public void reset() {
         collaboratorContext = callbacks.createBurpCollaboratorClientContext();
-        this.gadgetProbe = new GadgetProbe(collaboratorContext.generatePayload(true));
+        this.clazzScope = new ClazzScope(collaboratorContext.generatePayload(true));
     }
 }
