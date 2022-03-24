@@ -78,7 +78,7 @@ public class Analyzer {
                     max = dedupList.get(iden).split("\\|").length;
                     common = iden;
                 }
-            if ( dedupList.get(iden).split("\\|").length < count){
+            if ( dedupList.get(iden).split("\\|").length <= count){
                 System.out.println(iden + "," + dedupList.get(iden));
             }
         }

@@ -56,8 +56,8 @@ public class BurpExtender implements IBurpExtender, ActionListener, IIntruderPay
         stdout = new PrintWriter(callbacks.getStdout(), true);
         stderr = new PrintWriter(callbacks.getStderr(), true);
 
-        stdout.println("ClazzScope Initialized!");
-        stdout.println("Learn more: https://github.com/TDB");
+        stdout.println("ClazzScope Initialized!!");
+        stdout.println("Learn more: https://github.com/0xfed/ClazzScope");
         stdout.println("");
 
         initializeCurrentCollaboratorVariables();
@@ -70,6 +70,7 @@ public class BurpExtender implements IBurpExtender, ActionListener, IIntruderPay
         guiManager = new BurpGui();
         guiManager.setupListeners(this::actionPerformed);
 
+        callbacks.registerIntruderPayloadProcessor(new ClazzScopeNullProcesscor(guiManager, helpers));
 
         interactionServer = new InteractionServer(callbacks, collaboratorContext, guiManager);
 

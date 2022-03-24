@@ -2,9 +2,11 @@ package net.babyphd.clazzscope;
 
 import burp.Analyzer;
 import javassist.*;
+import weblogic.rmi.provider.BasicServiceContext;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.*;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -14,7 +16,7 @@ import static com.nqzero.permit.Permit.setAccessible;
 
 public class ClazzScope {
 
-    private String callbackDomain;
+    public String callbackDomain;
     private ClassPool pool;
 
     public ClazzScope(String callback_domain) {
@@ -82,7 +84,7 @@ public class ClazzScope {
         }
 
         String fakeClass = Analyzer.genString(className.length());
-        Class clazz = getOrGenerateClass(className, svUID);
+        Class clazz = getOrGenerateClass(fakeClass, svUID);
         if (clazz == null) {
             return null;
         }
@@ -105,14 +107,32 @@ public class ClazzScope {
 
         try {
             ObjectOutputStream out = new ObjectOutputStream(byteArrayOutputStream);
-            out.writeObject(hm);
+            BasicServiceContext bsc = new BasicServiceContext(1, hm, false);
+            out.writeObject(bsc);
         } catch (IOException e) {
             e.printStackTrace();
         }
         // Method for deserialization of object
-        byte[] byteObj = byteArrayOutputStream.toString().replaceAll(Pattern.quote(fakeClass), Matcher.quoteReplacement(clazz.getName())).getBytes();
+//        byte[] byteObj = byteArrayOutputStream.toString().replaceAll(Pattern.quote(fakeClass), Matcher.quoteReplacement(clazz.getName())).getBytes();
+        byte[] bytes = byteArrayOutputStream.toByteArray();
+        ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+        byte[] search = fakeClass.getBytes();
+        byte[] replacement = className.getBytes();
+        InputStream ris = new ReplacingInputStream(bis, search, replacement);
 
-        return byteObj;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+        int b = 0;
+        while (true) {
+            try {
+                if (!(-1 != (b = ris.read()))) break;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            bos.write(b);
+        }
+
+        return bos.toByteArray();
     }
     public static void main(String[] args) throws  Exception{
         Analyzer.getUniqueList(args);

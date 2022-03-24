@@ -42,7 +42,9 @@ public class InteractionServer extends Thread {
 
 
         if(initialCollaboratorContext != null) {
-            this.clazzScope = new ClazzScope(initialCollaboratorContext.generatePayload(true));
+            String dns = initialCollaboratorContext.generatePayload(true);
+            stdout.println("New DNS: " + dns);
+            this.clazzScope = new ClazzScope(dns);
             collaboratorContext = initialCollaboratorContext;
         } else {
             stdout.println("Collaborator disabled");
@@ -74,7 +76,10 @@ public class InteractionServer extends Thread {
     }
 
     public void setCollaboratorContext(IBurpCollaboratorClientContext collaboratorContext) {
-        this.clazzScope = new ClazzScope(collaboratorContext.getCollaboratorServerLocation());
+
+        String dns = collaboratorContext.getCollaboratorServerLocation();
+        stdout.println("New DNS: " + dns);
+        this.clazzScope = new ClazzScope(dns);
     }
 
     public void run() {
@@ -187,6 +192,8 @@ public class InteractionServer extends Thread {
 
     public void reset() {
         collaboratorContext = callbacks.createBurpCollaboratorClientContext();
-        this.clazzScope = new ClazzScope(collaboratorContext.generatePayload(true));
+        String dns = collaboratorContext.generatePayload(true);
+        stdout.println("New DNS: " + dns);
+        this.clazzScope = new ClazzScope(dns);
     }
 }
